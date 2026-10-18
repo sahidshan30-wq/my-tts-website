@@ -3,42 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100% Working AI Text to Speech</title>
+    <title>Fish Audio Premium Studio</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 480px; box-sizing: border-box; }
-        h2 { text-align: center; color: #1e293b; margin-top: 0; font-size: 24px; }
-        label { font-weight: 600; display: block; margin-top: 20px; margin-bottom: 6px; color: #475569; }
-        input, textarea, button { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; font-size: 15px; }
-        input:focus, textarea:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-        button { background-color: #2563eb; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-top: 10px; }
-        button:hover { background-color: #1d4ed8; }
-        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
-        audio { width: 100%; margin-top: 20px; border-radius: 8px; }
-        .success-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 12px; border-radius: 8px; margin-top: 15px; display: none; font-size: 14px; text-align: center; font-weight: 500; }
-        .error-msg { color: #dc2626; font-size: 14px; margin-top: 12px; font-weight: bold; text-align: center; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #eef2f3; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 480px; box-sizing: border-box; }
+        h2 { text-align: center; color: #1e293b; margin-top: 0; }
+        label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #475569; }
+        input, textarea, button { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        button { background-color: #10b981; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #059669; }
+        button:disabled { background-color: #94a3b8; }
+        audio { width: 100%; margin-top: 20px; }
+        .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 12px; border-radius: 8px; margin-top: 15px; display: none; text-align: center; }
+        .error-msg { color: #dc2626; font-size: 14px; margin-top: 12px; font-weight: bold; text-align: center; background: #fef2f2; padding: 10px; border-radius: 8px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>AI Voice Converter</h2>
+    <h2>Fish Audio Studio</h2>
     
-    <label>1. Fish Audio API Key डालें:</label>
-    <input type="password" id="apiKey" placeholder="यहाँ अपनी Key पेस्ट करें (Bearer...)">
+    <label>1. Fish Audio API Key:</label>
+    <input type="password" id="apiKey" placeholder="अपनी Key पेस्ट करें">
 
-    <label>2. Voice ID (Hindi Voice सेट है):</label>
+    <label>2. Voice ID (Hindi Voice):</label>
     <input type="text" id="voiceId" value="6c3d7cfb3d1d44dba29160ef21a8bad6">
 
-    <label>3. अपना टेक्स्ट (Text) लिखें:</label>
-    <textarea id="textInput" rows="4" placeholder="यहाँ जो भी लिखेंगे, AI उसे जादुई आवाज़ में बदल देगा..."></textarea>
+    <label>3. टेक्स्ट लिखें:</label>
+    <textarea id="textInput" rows="4" placeholder="यहाँ टेक्स्ट लिखें..."></textarea>
 
-    <button id="genBtn" onclick="generateSpeech()">Convert Text to Speech</button>
+    <button id="genBtn" onclick="generateSpeech()">Generate Audio</button>
     
     <div id="errorBox" class="error-msg"></div>
     
-    <div id="successContainer" class="success-box">
-        🎉 आपकी आवाज़ तैयार है! नीचे से सुनें:
+    <div id="successBox" class="info-box">
+        🔊 ऑडियो तैयार है! यहाँ से सुनें:
         <audio id="audioPlayer" controls></audio>
     </div>
 </div>
@@ -50,84 +49,67 @@ async function generateSpeech() {
     const voiceId = document.getElementById('voiceId').value.trim();
     const button = document.getElementById('genBtn');
     const errorBox = document.getElementById('errorBox');
-    const successContainer = document.getElementById('successContainer');
+    const successBox = document.getElementById('successBox');
 
-    // स्क्रीन साफ करें
-    errorBox.innerText = "";
-    successContainer.style.display = "none";
+    errorBox.style.display = "none";
+    successBox.style.display = "none";
 
-    if (!apiKey) {
-        alert("कृपया अपनी Fish Audio API Key बॉक्स नंबर 1 में डालें!");
-        return;
-    }
-    if (!text) {
-        alert("कृपया बॉक्स नंबर 3 में कोई टेक्स्ट लिखें जिसे आवाज़ में बदलना है!");
+    if (!apiKey || !text) {
+        alert("कृपया API Key और Text दोनों भरें!");
         return;
     }
 
-    button.innerText = "⏳ आवाज़ बन रही है... थोड़ा इंतज़ार करें...";
+    button.innerText = "⏳ प्रोसेसिंग हो रही है...";
     button.disabled = true;
 
-    // ब्राउज़र का 'Failed to Fetch' एरर रोकने के लिए दो अलग-अलग सिक्योर प्रॉक्सी का बैकअप सेटअप
-    const proxies = [
-        'https://corsproxy.io?',
-        'https://allorigins.win'
-    ];
-    
+    // अलग-अलग प्रॉक्सी सर्वर का डायरेक्ट कॉम्बिनेशन
     const targetUrl = 'https://fish.audio';
-    let response = null;
-    let success = false;
+    const proxy = 'https://allorigins.win';
 
-    // प्रॉक्सी 1 से कोशिश करें, अगर फेल हुआ तो प्रॉक्सी 2 का इस्तेमाल करें
-    for (let i = 0; i < proxies.length; i++) {
-        try {
-            const finalUrl = proxies[i] + encodeURIComponent(targetUrl);
-            
-            response = await fetch(finalUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    text: text,
-                    reference_id: voiceId,
-                    model: "s2.1-pro-free", // मुफ्त मॉडल का उपयोग ताकि आपके क्रेडिट न खत्म हों
-                    format: 'mp3'
-                })
-            });
+    try {
+        const response = await fetch(proxy + encodeURIComponent(targetUrl), {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text,
+                reference_id: voiceId,
+                model: "s2.1-pro-free", 
+                format: 'mp3'
+            })
+        });
 
-            if (response.ok) {
-                success = true;
-                break; // अगर काम कर गया तो लूप से बाहर निकलें
-            }
-        } catch (e) {
-            console.log("Proxy " + (i+1) + " failed, trying next...");
+        // स्टेटस चेकिंग
+        if (response.status === 401) {
+            throw new Error("आपकी API Key गलत है! कृपया सही Key डालें।");
+        } else if (response.status === 402) {
+            throw new Error("अकाउंट बैलेंस 0 है! आपके फ्री क्रेडिट्स समाप्त हो चुके हैं।");
+        } else if (!response.ok) {
+            throw new Error("सर्वर रिस्पॉन्स कोड: " + response.status);
         }
-    }
 
-    // फाइनल चेकिंग और ऑडियो प्लेयर लोड करना
-    if (success && response) {
-        try {
-            const audioBlob = await response.blob();
-            if (audioBlob.size < 100) {
-                throw new Error("API Key गलत है या आपके अकाउंट का फ्री कोटा समाप्त हो गया है।");
-            }
-            const audioUrl = URL.createObjectURL(audioBlob);
-            
-            const player = document.getElementById('audioPlayer');
-            player.src = audioUrl;
-            successContainer.style.display = 'block';
-            player.play();
-        } catch (error) {
-            errorBox.innerText = "❌ एरर: " + error.message;
+        const audioBlob = await response.blob();
+        
+        if (audioBlob.size < 500) {
+            throw new Error("क्रेडिट खत्म या API ब्लॉक। कृपया एक बार नया अकाउंट बनाकर आज़माएं।");
         }
-    } else {
-        errorBox.innerText = "❌ कनेक्शन फेल: कृपया अपनी API Key जांचें या इंटरनेट कनेक्शन चेक करें।";
-    }
 
-    button.innerText = "Convert Text to Speech";
-    button.disabled = false;
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const player = document.getElementById('audioPlayer');
+        player.src = audioUrl;
+        
+        successBox.style.display = 'block';
+        player.play();
+
+    } catch (error) {
+        errorBox.innerText = "❌ " + error.message;
+        errorBox.style.display = "block";
+    } finally {
+        button.innerText = "Generate Audio";
+        button.disabled = false;
+    }
 }
 </script>
 </body>
